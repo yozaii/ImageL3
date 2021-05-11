@@ -24,7 +24,7 @@ public class Tests {
 		//nu.pattern.OpenCV.loadShared();
 		nu.pattern.OpenCV.loadLocally();
 		
-		String path = "D:\\UE_Image\\Base_Image\\Base\\56.jpeg";//Remplir ici ou se trouve le fichier
+		String path = "D:\\UE_Image\\Base_Image\\Base\\52.jpg";//Remplir ici ou se trouve le fichier
 
 		Mat mat;
 		mat = Imgcodecs.imread(path,0);//Reading image and loading it into a matrix
@@ -35,6 +35,25 @@ public class Tests {
 		Mat res = Processing.verticalROI(mat);
 		HighGui.imshow("result", res);
 		
+		Mat sobelY = Filters.sobelY(res);	
+		HighGui.imshow("sobelY", sobelY);
+		
+		Mat edgesH = new Mat();
+		Imgproc.Canny(sobelY, edgesH, 100, 100*3);
+		HighGui.imshow("Edges horizontal", edgesH);
+		
+		Mat kernel = new Mat( 3, 3, 0);
+		int kRow = kernel.rows();
+		int kCol = kernel.cols();
+        kernel.put(kRow ,kCol,
+                -1, -1, -1,
+                1, 1, 1,
+                -1, -1, -1 );
+		for (int i =0 ; i < 5 ; i++)
+			Imgproc.morphologyEx(edgesH, edgesH, Imgproc.MORPH_CLOSE, kernel);
+		
+		Mat houghH = Processing.houghP(edgesH, 40, "Horizontal");
+		HighGui.imshow("Hough horizontal", houghH);
 		
 		HighGui.waitKey();
 		HighGui.destroyAllWindows();

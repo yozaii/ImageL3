@@ -61,7 +61,60 @@ public class Processing {
 			mat.put(row, i, data);
 		}
 	}
-
+	
+	/**
+	 * Applies hough probabilistic transform on given mat (Given mat must be grayscale)
+	 * @param edges : the given mat
+	 * @param pintThreshold : the point intersection threshold in the HoughLines method
+	 * @return : the mat with hough lines colored on the mat
+	 */
+	public static Mat houghP(Mat edges, int pointThreshold, String orientation) {
+		
+		Mat lines = new Mat();
+		Mat edgesColor = new Mat();
+		
+		Imgproc.cvtColor(edges, edgesColor, Imgproc.COLOR_GRAY2BGR);
+		
+	    Imgproc.HoughLinesP(edges, lines, 1, Math.PI/180, pointThreshold);
+	    
+		for (int i = 0; i < lines.rows(); i++) {
+			double[] data = lines.get(i, 0);
+			double rho = data[0];
+			double theta = data[1];
+			double a = Math.cos(theta);
+			double b = Math.sin(theta);
+			double x0 = a*rho;
+			double y0 = b*rho;
+			//Drawing lines on the image
+			Point pt1 = new Point();
+			Point pt2 = new Point();
+			pt1.x = Math.round(x0 + 1000*(-b));
+			pt1.y = Math.round(y0 + 1000*(a));
+			pt2.x = Math.round(x0 - 1000*(-b));
+			pt2.y = Math.round(y0 - 1000 *(a));
+			double slope = ((pt2.y-pt1.y)/(pt2.x-pt1.x));
+			
+			
+			
+			//We keep only the horizontal hough lines
+			if (orientation == "Horizontal")
+				if (Math.abs(slope)<0.05) {
+					Imgproc.line(edgesColor, pt1, pt2, new Scalar(0, 0, 255), 3);
+					System.out.println(i + " : Slope :" + slope + " x1: " + pt1.x + " x2: " + pt2.x + " y1: " + pt1.y + " y2: " + pt2.y);
+				}
+			
+			//We keep only the vertical hough lines
+			if (orientation == "Vertical")
+				if (Math.abs(slope)>90) {
+					Imgproc.line(edgesColor, pt1, pt2, new Scalar(0, 0, 255), 3);
+					System.out.println(i + " : Slope :" + slope + " x1: " + pt1.x + " x2: " + pt2.x + " y1: " + pt1.y + " y2: " + pt2.y);
+				}
+		}
+		return edgesColor;
+	}
+	
+	//TODO: change return of matrix to return of lines
+	//TODO: remove line coloring from this method to houghColoring method
 	/**
 	 * Applies hough transform on given mat (Given mat must be grayscale)
 	 * @param edges : the given mat
@@ -113,18 +166,22 @@ public class Processing {
 		return edgesColor;
 	}
 	
+	
+	//TODO: use lines from hough method to color lines here
 	public static Mat HoughColoring(Mat mat) {
-		
+		Mat res = mat.clone();
+		return res;
 	}
 	
 	public static Mat verticalROI(Mat mat) {
 
+		Mat res = mat.clone();
 		Mat edgesV = new Mat();//Will contain canny edges
 		Mat kernel = Mat.ones(5,5, CvType.CV_32F);//5x5 kernel filled with ones
 		
 		Mat sobelX = Filters.sobelX(mat);//Sobel of horizontal change
 		
-		HighGui.imshow("sobelX", sobelX);
+		//HighGui.imshow("sobelX", sobelX);
 		
 		//Finding the vertical edges from sobel x
 		Imgproc.Canny(sobelX, edgesV, 100, 100*3);
@@ -133,21 +190,20 @@ public class Processing {
 		for (int i =0 ; i < 5 ; i++)
 			Imgproc.morphologyEx(edgesV, edgesV, Imgproc.MORPH_CLOSE, kernel);
 		
-		HighGui.imshow("edges Vertical", edgesV);
+		//HighGui.imshow("edges Vertical", edgesV);
 		
 		//Vertical hough lines
 		Mat edgesColorV = Processing.hough(edgesV, 20, "Vertical");
 
-	    HighGui.imshow("Hough Vertical", edgesColorV);
+	    //HighGui.imshow("Hough Vertical", edgesColorV);
 		
 	    for (int i = 0; i < edgesColorV.rows(); i++) {
 	    	
 	    	int[] minMax = findMinMaxRed(i, edgesColorV);
-	    	blackBeforeAndAfter(i, minMax[0],minMax[1], edgesColorV);
+	    	blackBeforeAndAfter(i, minMax[0],minMax[1], res);
 	    	
 	    }
-		
-		HighGui.waitKey();
-		return edgesColorV;
+	    
+		return res;
 	}
 }
