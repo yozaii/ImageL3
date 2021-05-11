@@ -113,30 +113,41 @@ public class Processing {
 		return edgesColor;
 	}
 	
-	public static Mat regionOfInterest(Mat mat) {
+	public static Mat HoughColoring(Mat mat) {
+		
+	}
+	
+	public static Mat verticalROI(Mat mat) {
 
-		Mat res = mat.clone();
+		Mat edgesV = new Mat();//Will contain canny edges
+		Mat kernel = Mat.ones(5,5, CvType.CV_32F);//5x5 kernel filled with ones
 		
-		Mat edgesV = new Mat();
-		Mat kernel = Mat.ones(5,5, CvType.CV_32F);
-		
-		Mat sobelX = Filters.sobelX(mat);
+		Mat sobelX = Filters.sobelX(mat);//Sobel of horizontal change
 		
 		HighGui.imshow("sobelX", sobelX);
 		
+		//Finding the vertical edges from sobel x
 		Imgproc.Canny(sobelX, edgesV, 100, 100*3);
 		
+		//Closing using kernel
 		for (int i =0 ; i < 5 ; i++)
 			Imgproc.morphologyEx(edgesV, edgesV, Imgproc.MORPH_CLOSE, kernel);
 		
 		HighGui.imshow("edges Vertical", edgesV);
 		
+		//Vertical hough lines
 		Mat edgesColorV = Processing.hough(edgesV, 20, "Vertical");
 
 	    HighGui.imshow("Hough Vertical", edgesColorV);
 		
+	    for (int i = 0; i < edgesColorV.rows(); i++) {
+	    	
+	    	int[] minMax = findMinMaxRed(i, edgesColorV);
+	    	blackBeforeAndAfter(i, minMax[0],minMax[1], edgesColorV);
+	    	
+	    }
 		
 		HighGui.waitKey();
-		return res;
+		return edgesColorV;
 	}
 }

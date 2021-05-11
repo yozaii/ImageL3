@@ -32,46 +32,8 @@ public class Tests {
 		HighGui.imshow("source", mat);
 		
 		
-		Mat dst = new Mat();
-		Mat edgesV = new Mat();
-		Mat edgesH = new Mat();
-		
-		/*Imgproc.adaptiveThreshold(mat, dst, 255, Imgproc.ADAPTIVE_THRESH_MEAN_C,
-		         Imgproc.THRESH_BINARY, 3, 5);
-		HighGui.imshow("dst", dst);*/
-		Mat kernel = new Mat( 3, 3, 0);
-		int kRow = kernel.rows();
-		int kCol = kernel.cols();
-        kernel.put(kRow ,kCol,
-                -1, -1, -1,
-                1, 1, 1,
-                -1, -1, -1 );
-		
-		Mat sobelX = Filters.sobelX(mat);
-		Mat sobelY = Filters.sobelY(mat);
-		
-		HighGui.imshow("sobelX", sobelX);
-		HighGui.imshow("sobelY" , sobelY);
-		
-		
-		Imgproc.Canny(sobelX, edgesV, 100, 100*3);
-		Imgproc.Canny(sobelY, edgesH, 100, 100*3);
-		
-		//Imgproc.morphologyEx(edges, edges, Imgproc.MORPH_DILATE, kernel);
-		for (int i =0 ; i < 5 ; i++)
-			Imgproc.morphologyEx(edgesV, edgesV, Imgproc.MORPH_CLOSE, kernel);
-		for (int i =0 ; i < 5 ; i++)
-			Imgproc.morphologyEx(edgesH, edgesH, Imgproc.MORPH_CLOSE, kernel);
-	
-		
-		HighGui.imshow("edges Vertical", edgesV);
-		HighGui.imshow("edges Horizontal", edgesH);
-		
-		Mat edgesColorV = Processing.hough(edgesV,20, "Vertical");
-		Mat edgesColorH = Processing.hough(edgesH,20, "Horizontal");
-
-	    HighGui.imshow("Hough Vertical", edgesColorV);
-	    HighGui.imshow("Hough Horizontal", edgesColorH);
+		Mat res = Processing.verticalROI(mat);
+		HighGui.imshow("result", res);
 		
 		
 		HighGui.waitKey();
