@@ -105,7 +105,7 @@ public class Processing {
 			
 			//We keep only the vertical hough lines
 			if (orientation == "Vertical")
-				if (Math.abs(slope)>90) {
+				if (Math.abs(slope)>50) {
 					Imgproc.line(edgesColor, pt1, pt2, new Scalar(0, 0, 255), 3);
 					System.out.println(i + " : Slope :" + slope + " x1: " + pt1.x + " x2: " + pt2.x + " y1: " + pt1.y + " y2: " + pt2.y);
 				}
@@ -153,14 +153,14 @@ public class Processing {
 			if (orientation == "Horizontal")
 				if (Math.abs(slope)<0.05) {
 					Imgproc.line(edgesColor, pt1, pt2, new Scalar(0, 0, 255), 3);
-					System.out.println(i + " : Slope :" + slope + " x1: " + pt1.x + " x2: " + pt2.x + " y1: " + pt1.y + " y2: " + pt2.y);
+					//System.out.println(i + " : Slope :" + slope + " x1: " + pt1.x + " x2: " + pt2.x + " y1: " + pt1.y + " y2: " + pt2.y);
 				}
 			
 			//We keep only the vertical hough lines
 			if (orientation == "Vertical")
-				if (Math.abs(slope)>90) {
+				if (Math.abs(slope)>50) {
 					Imgproc.line(edgesColor, pt1, pt2, new Scalar(0, 0, 255), 3);
-					System.out.println(i + " : Slope :" + slope + " x1: " + pt1.x + " x2: " + pt2.x + " y1: " + pt1.y + " y2: " + pt2.y);
+					//System.out.println(i + " : Slope :" + slope + " x1: " + pt1.x + " x2: " + pt2.x + " y1: " + pt1.y + " y2: " + pt2.y);
 				}
 		}
 		return edgesColor;
@@ -173,9 +173,9 @@ public class Processing {
 		return res;
 	}
 	
-	public static Mat verticalROI(Mat mat) {
-
-		Mat res = mat.clone();
+	public static int[] verticalROI(Mat mat) {
+		
+		Imgproc.medianBlur(mat, mat, 5);
 		Mat edgesV = new Mat();//Will contain canny edges
 		Mat kernel = Mat.ones(5,5, CvType.CV_32F);//5x5 kernel filled with ones
 		
@@ -190,20 +190,38 @@ public class Processing {
 		for (int i =0 ; i < 5 ; i++)
 			Imgproc.morphologyEx(edgesV, edgesV, Imgproc.MORPH_CLOSE, kernel);
 		
-		//HighGui.imshow("edges Vertical", edgesV);
+		HighGui.imshow("edges Vertical", edgesV);
 		
-		//Vertical hough lines
-		Mat edgesColorV = Processing.hough(edgesV, 20, "Vertical");
+		int houghThresh = 30, maxLoop = 0;
+		int[] minMax = new int[2];
+		boolean bool = false;//Becomes true if we find a good houghThreshold calibration
+		Mat edgesColorV;
+		
+		//Loop to find a good houghThreshold calibration
+		do {
+			
+			edgesColorV = Processing.hough(edgesV, houghThresh, "Vertical");
+			minMax = findMinMaxRed(0, edgesColorV);
+			
+			if (minMax[1]-minMax[0]>=mat.cols()-20) {
+				houghThresh += 20;
+			}
+			
+			else if (minMax[1]-minMax[0]<30) {
+				houghThresh -=20;
+			}
 
-	    //HighGui.imshow("Hough Vertical", edgesColorV);
+			else {
+				bool = true;
+			}
+			
+			maxLoop++;
+		}
+		while (maxLoop <20 && !bool);
 		
-	    for (int i = 0; i < edgesColorV.rows(); i++) {
-	    	
-	    	int[] minMax = findMinMaxRed(i, edgesColorV);
-	    	blackBeforeAndAfter(i, minMax[0],minMax[1], res);
-	    	
-	    }
+		System.out.println("Vertical hough: " + houghThresh);
+	    HighGui.imshow("Hough Vertical", edgesColorV);
 	    
-		return res;
+		return minMax;
 	}
 }
