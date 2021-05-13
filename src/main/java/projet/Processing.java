@@ -63,6 +63,41 @@ public class Processing {
 	}
 	
 	/**
+	 * Takes the pixels of the red colors in the first mat, and removes them from the second mat.
+	 * @param mat
+	 * @param rMat
+	 */
+	public static void removeDetails(Mat mat, Mat rMat) {
+		
+		Mat res = rMat.clone();
+		double[] data;
+		double[] black = {0,0,0};
+		for (int i = 0; i < mat.rows(); i++)
+			for (int j = 0 ; j < mat.cols(); j++) {
+				data = mat.get(i, j);
+				if (data[0] == 0 && data[1] == 0 && data[2] == 255) {
+					res.put(i, j, black);
+				}
+			}
+	}
+	
+	/**
+	 * Colors black between min and max indices in a given row
+	 * @param row : row to color
+	 * @param min : index to color before
+	 * @param max : index to color after
+	 * @param mat : the matrix to color
+	 */
+	public static void blackBetween(int row, int min, int max, Mat mat) {
+		double[] data = {0,0,0};//Black color
+		
+		//Fill black between indices
+		for (int i = min; i < max; i++) {
+			mat.put(row, i, data);
+		}
+	}
+	
+	/**
 	 * Applies hough probabilistic transform on given mat (Given mat must be grayscale)
 	 * @param edges : the given mat
 	 * @param pintThreshold : the point intersection threshold in the HoughLines method
@@ -168,11 +203,16 @@ public class Processing {
 	
 	
 	//TODO: use lines from hough method to color lines here
-	public static Mat HoughColoring(Mat mat) {
+	public static Mat HoughColoring(Mat mat, Mat lines) {
 		Mat res = mat.clone();
 		return res;
 	}
 	
+	/**
+	 * Segments an image to keep the cup region of interest
+	 * @param mat : The mat to be processed
+	 * @return : int[] minMax where minMax[0] is the left vertical extremity, minMax[1] the right vertical extremity
+	 */
 	public static int[] verticalROI(Mat mat) {
 		
 		Imgproc.medianBlur(mat, mat, 5);
@@ -190,7 +230,7 @@ public class Processing {
 		for (int i =0 ; i < 5 ; i++)
 			Imgproc.morphologyEx(edgesV, edgesV, Imgproc.MORPH_CLOSE, kernel);
 		
-		HighGui.imshow("edges Vertical", edgesV);
+		//HighGui.imshow("edges Vertical", edgesV);
 		
 		int houghThresh = 30, maxLoop = 0;
 		int[] minMax = new int[2];
@@ -203,18 +243,17 @@ public class Processing {
 			edgesColorV = Processing.hough(edgesV, houghThresh, "Vertical");
 			minMax = findMinMaxRed(0, edgesColorV);
 			
-			if (minMax[1]-minMax[0]>=mat.cols()-20) {
+			//minMax[1]-minMax[0]>=mat.cols()-20
+			if (minMax[1] > 460 || minMax[0]<20) {
 				houghThresh += 20;
 			}
 			
-			else if (minMax[1]-minMax[0]<30) {
+			if (minMax[1]-minMax[0]<30) {
 				houghThresh -=20;
 			}
 
-			else {
+			if (minMax[1] < 460 && minMax[0] > 20 && minMax[1]-minMax[0]>30)
 				bool = true;
-			}
-			
 			maxLoop++;
 		}
 		while (maxLoop <20 && !bool);
