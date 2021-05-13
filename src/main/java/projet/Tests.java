@@ -33,13 +33,18 @@ public class Tests {
                 1, 1, 1 );
 		
 		
-		String path = "D:\\UE_Image\\Base_Image\\Base\\26.jpg";//Remplir ici ou se trouve le fichier
-		
+		String path = "D:\\UE_Image\\Base_Image\\Base\\75.jpg";//Remplir ici ou se trouve le fichier
+				/*
+		 * Point pt1 = new Point(40,0);
+		Point pt2 = new Point(40,479);
+		Scalar color = new Scalar(0,0,0);
+		Imgproc.line(mat, pt1, pt2, color, 3);
+		 */
 		Mat mat;
 		mat = Imgcodecs.imread(path,0);//Reading image and loading it into a matrix
 		mat = PreProcessing.resizeMat(mat, 480, 640);
 		HighGui.imshow("source", mat);
-		
+	
 		Mat cl = mat.clone();//Clone of source image
 		int[] minMax = Processing.verticalROI(mat);
 	    for (int i = 0; i < cl.rows(); i++) {

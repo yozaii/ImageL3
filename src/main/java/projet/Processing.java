@@ -243,20 +243,41 @@ public class Processing {
 			edgesColorV = Processing.hough(edgesV, houghThresh, "Vertical");
 			minMax = findMinMaxRed(0, edgesColorV);
 			
+			int minCenter = 105;
+			int maxCenter = 375;
+			int minLeft = 40;
+			int maxRight = 440;
+			int average = (minMax[0] + minMax[1])/2;
+			int houghIncrement = 10;
+			int minWidth = 30;
+			boolean tests = true;
+			
 			//minMax[1]-minMax[0]>=mat.cols()-20
-			if (minMax[1] > 460 || minMax[0]<20) {
-				houghThresh += 20;
+			if (minMax[1] > maxRight || minMax[0]< minLeft) {
+				tests = false;
+				houghThresh += houghIncrement;
+				if (minMax[1]-minMax[0]< minWidth) 
+					houghThresh -=houghIncrement;
+				if (average > maxCenter || average < minCenter )
+					houghThresh -=houghIncrement;
 			}
 			
-			if (minMax[1]-minMax[0]<30) {
-				houghThresh -=20;
+			if (minMax[1] - minMax[0] < minWidth) {
+				tests = false;
+				houghThresh -=houghIncrement;
+			}
+				
+			
+			if (average > maxCenter || average < minCenter ) {
+				tests = false;
+				houghThresh -=houghIncrement;
 			}
 
-			if (minMax[1] < 460 && minMax[0] > 20 && minMax[1]-minMax[0]>30)
+			if (tests)
 				bool = true;
 			maxLoop++;
 		}
-		while (maxLoop <20 && !bool);
+		while (maxLoop <70 && !bool);
 		
 		System.out.println("Vertical hough: " + houghThresh);
 	    HighGui.imshow("Hough Vertical", edgesColorV);
