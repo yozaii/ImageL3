@@ -2,6 +2,7 @@ package projet;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
@@ -120,7 +121,7 @@ public class Tests {
 		/*------------------Hough horizontal lines-------------------*/
 		/*-----------------------------------------------------------*/
 		int houghThresh = (minMax[1] - minMax[0])/3;
-		System.out.println("min: " + minMax[0] + " max: " + minMax[1] +  "thresh: " + houghThresh);
+		System.out.println("Region of interest min: " + minMax[0] + " max: " + minMax[1] +  " thresh: " + houghThresh);
 		Mat houghH = Processing.hough(sobelY, houghThresh, "Horizontal");
 		HighGui.imshow("Hough horizontal", houghH);
 		
@@ -131,6 +132,26 @@ public class Tests {
 		houghThresh = (sobelYR.cols() - minMax[1] - minMax[0])/3;
 		Mat houghHR = Processing.hough(sobelYR, houghThresh, "Horizontal");
 		HighGui.imshow("Hough reverse horizontal", houghHR);
+		
+		/*-----------------------------------------------------------*/
+		/*------------------Red line operations----------------------*/
+		/*-----------------------------------------------------------*/
+		ArrayList<Integer> nonRedIntervals = RedOp.nonRedIntervals(houghH);
+		System.out.println("The indices of the nonRed intervals" + nonRedIntervals.toString());
+		
+		ArrayList<Integer> nonRedSize = RedOp.nonRedIntervalsSize(houghH);
+		System.out.println("The distance of the nonRed intervals:" + nonRedSize.toString());
+		
+		/*-----------------------------------------------------------*/
+		/*------------------Red line operations 2--------------------*/
+		/*-----------------------------------------------------------*/
+		ArrayList<Integer> newNonRedIntervals = RedOp.listsThreshold(nonRedSize, nonRedIntervals, 21);
+		System.out.println("Intervals after: " + newNonRedIntervals.toString());
+		Mat houghH2 = houghH.clone();
+		for (int i = 0 ; i< newNonRedIntervals.size()-1; i+=2) {
+			Processing.colorRowsRed(newNonRedIntervals.get(i), newNonRedIntervals.get(i+1), houghH2);
+		}
+		HighGui.imshow("HOUGH TWOOO", houghH2);
 		
 		HighGui.waitKey();
 		HighGui.destroyAllWindows();

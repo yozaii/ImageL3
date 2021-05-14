@@ -1,13 +1,14 @@
 package projet;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 /**
- * This class is used for math calculations
+ * This class is used for list calculations
  * @author Youssef AL OZAIBI
  *
  */
-public class UtilMath {
+public class UtilList {
 	
 	public static double findListAverage(ArrayList<Integer> l) {
 		int sum = 0;
@@ -17,4 +18,11 @@ public class UtilMath {
 		double average = sum / l.size();
 		return average;
 	}
+	
+	public static int findListMean(ArrayList<Integer> l) {
+		int meanIndex = l.size()/2;
+		Collections.sort(l);
+		return l.get(meanIndex);
+	}
+	
 }

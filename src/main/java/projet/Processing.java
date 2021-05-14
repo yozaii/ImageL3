@@ -1,5 +1,7 @@
 package projet;
 
+import java.util.ArrayList;
+
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
@@ -15,7 +17,21 @@ import org.opencv.imgproc.Imgproc;
  */
 public class Processing {
 	
-	
+	/**Colors all rows in a matrix between the indices to red
+	 * @param min : min index
+	 * @param max : max index
+	 * @param mat : Matrix to be colored
+	 */
+	public static void colorRowsRed(int min, int max, Mat mat) {
+		
+		double[] data = {0,0,255};
+		
+		for (int i = min; i< max; i++) {
+			for (int j = 0; j < mat.cols(); j++) {
+				mat.put(i, j, data);
+			}
+		}
+	}
 	
 	/**
 	 * Colors black before and after given indices in a given row
@@ -54,6 +70,28 @@ public class Processing {
 		for (int i = min; i < max; i++) {
 			mat.put(row, i, data);
 		}
+	}
+	
+	public static Mat removeNonRedIntervals(Mat mat, int thresh) {
+		/*-----------------------------------------------------------*/
+		/*----------Finding non red intervals/distance---------------*/
+		/*-----------------------------------------------------------*/
+		ArrayList<Integer> nonRedIntervals = RedOp.nonRedIntervals(mat);
+		System.out.println("The indices of the nonRed intervals" + nonRedIntervals.toString());
+		
+		ArrayList<Integer> nonRedSize = RedOp.nonRedIntervalsSize(mat);
+		System.out.println("The distance of the nonRed intervals:" + nonRedSize.toString());
+		
+		/*-----------------------------------------------------------*/
+		/*------------------Filling in the intervals-----------------*/
+		/*-----------------------------------------------------------*/
+		ArrayList<Integer> newNonRedIntervals = RedOp.listsThreshold(nonRedSize, nonRedIntervals, 21);
+		System.out.println("Intervals after: " + newNonRedIntervals.toString());
+		Mat res = mat.clone();
+		for (int i = 0 ; i< newNonRedIntervals.size()-1; i+=2) {
+			Processing.colorRowsRed(newNonRedIntervals.get(i), newNonRedIntervals.get(i+1), res);
+		}
+		return res;
 	}
 	
 	/**
@@ -239,7 +277,7 @@ public class Processing {
 		}
 		while (maxLoop <70 && !bool);
 		
-		System.out.println("Vertical hough: " + houghThresh);
+		System.out.println("Vertical hough threshold: " + houghThresh);
 	    HighGui.imshow("Hough Vertical", edgesColorV);
 	    
 		return minMax;

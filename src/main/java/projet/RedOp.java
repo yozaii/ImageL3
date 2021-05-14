@@ -1,5 +1,7 @@
 package projet;
 
+import java.util.ArrayList;
+
 import org.opencv.core.Mat;
 
 /**
@@ -59,6 +61,147 @@ public class RedOp {
 		ret[0] = min;
 		ret[1] = max;
 		return ret;
+	}
+	
+	/**
+	 * A list that returns the vertical red intervals in an image
+	 * with even number list index as the start of the interval,
+	 * and the odd number list index as the end
+	 * @param mat : matrix with horizontal red lines
+	 * @return : list with even indices = start, odd indices = end
+	 */
+	public static ArrayList<Integer> redIntervals(Mat mat){
+		
+		ArrayList<Integer> ret = new ArrayList<Integer>();//The returned list
+		int center = mat.cols()/2;
+		double data[];
+		for (int i = 0; i < mat.rows(); i++) {
+			data = mat.get(i , center);
+			int start = i;
+			while (data[0] == 0 && data[1] == 0 && data[2] == 255 && i < mat.rows()) { //While pixel is red
+				i++;
+				if (i < mat.rows())	data = mat.get(i, center);
+				
+			}
+			int end = i;
+			if (end!= start) {
+				ret.add(start);
+				ret.add(end);
+			}
+				
+		}
+		return ret;
+	}
+	
+	
+	/**
+	 * A list that returns the vertical red intervals size
+	 * @param mat : matrix with horizontal red lines
+	 * @return : list with size of red intervals
+	 */
+	public static ArrayList<Integer> redIntervalsSize(Mat mat){
+		
+		ArrayList<Integer> ret = new ArrayList<Integer>();//The returned list
+		int center = mat.cols()/2;
+		double data[];
+		for (int i = 0; i < mat.rows(); i++) {
+			data = mat.get(i , center);
+			int counter = 0;
+			while (data[0] == 0 && data[1] == 0 && data[2] == 255 && i < mat.rows()) { //While pixel is red
+				counter ++;
+				i++;
+				if (i < mat.rows()) data = mat.get(i, center);
+			}
+			if (counter != 0)
+				ret.add(counter);	
+		}
+		
+		return ret;
+	}
+	
+	
+	/**
+	 * A list that returns the vertical black intervals in an image
+	 * with even number list index as the start of the interval,
+	 * and the odd number list index as the end
+	 * @param mat : matrix with horizontal red lines
+	 * @return : list with even indices = start, odd indices = end
+	 */
+	public static ArrayList<Integer> nonRedIntervals(Mat mat){
+		
+		ArrayList<Integer> ret = new ArrayList<Integer>();//The returned list
+		int center = mat.cols()/2;
+		double data[];
+		for (int i = 0; i < mat.rows(); i++) {
+			data = mat.get(i , center);
+			int start = i;
+			while (!(data[0] == 0 && data[1] == 0 && data[2] == 255) && i < mat.rows()) { //While pixel is red
+				i++;
+				if (i < mat.rows())	data = mat.get(i, center);
+			}
+			int end = i;
+			if (end!= start) {
+				ret.add(start);
+				ret.add(end);
+			}
+				
+		}
+		return ret;
+	}
+	
+	
+	/**
+	 * A list that returns the vertical black intervals size
+	 * @param mat : matrix with horizontal red lines
+	 * @return : list with size of black intervals
+	 */
+	public static ArrayList<Integer> nonRedIntervalsSize(Mat mat){
+		
+		ArrayList<Integer> ret = new ArrayList<Integer>();//The returned list
+		int center = mat.cols()/2;
+		double data[];
+		for (int i = 0; i < mat.rows(); i++) {
+			data = mat.get(i , center);
+			int counter = 0;
+			while (!(data[0] == 0 && data[1] == 0 && data[2] == 255) && i < mat.rows()) { //While pixel is red
+				i++;
+				counter++;
+				if (i < mat.rows()) data = mat.get(i, center);
+				
+				
+			}
+			if (counter > 0)
+				ret.add(counter);
+			
+		}
+		return ret;
+	}
+	
+	/**
+	 * Returns a list of intervals with only values of size of intervals < threshold
+	 * @param l : List of interval sizes
+	 * @param l2 : List of intervals
+	 * @param thresh : threshold
+	 */
+	public static ArrayList<Integer> listsThreshold(ArrayList<Integer> l, ArrayList<Integer> l2, int thresh) {
+		
+		
+			ArrayList<Integer> newL = new ArrayList<Integer>();
+			ArrayList<Integer> newL2 = new ArrayList<Integer>();
+			for (int i = 0; i < l.size(); i++) {
+				int x = l.get(i);
+				
+				int x2 = l2.get(i*2);
+				int x3 = l2.get((i*2)+1);
+				if (x < thresh) {
+					newL.add(x);
+					newL2.add(x2);
+					newL2.add(x3);
+				}
+			}
+			
+			return newL2;
+			
 	}
 	
 	
