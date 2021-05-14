@@ -94,6 +94,66 @@ public class Processing {
 		return res;
 	}
 	
+	public static Mat drawClusters(Mat mat, ArrayList<Integer> intervals) {
+		Mat res = mat.clone();
+		
+		int size = intervals.size();
+		
+		/*---------------------------------------------------------*/
+		/*--The upper and lower clusters are colored in blue-------*/
+		/*---------------------------------------------------------*/
+		
+		//Upper cluster
+		int intervalAvrg = (intervals.get(0) + intervals.get(1))/2;
+		Point p1 = new Point (0 , intervalAvrg);
+		Point p2 = new Point (mat.cols()-1 , intervalAvrg);
+		Scalar color = new Scalar(255, 0, 0);//Blue
+		Imgproc.line(res, p1, p2, color, 3);
+		
+		//Lower cluster
+		intervalAvrg = (intervals.get(size-2 ) + intervals.get(size-1))/2;
+		p1 = new Point (0 , intervalAvrg);
+		p2 = new Point (mat.cols()-1 , intervalAvrg);
+		color = new Scalar(255, 0, 0);//Blue
+		Imgproc.line(res, p1, p2, color, 3);
+		
+		
+		int numClusters = size/2;
+		switch (numClusters) {
+		case 3: 
+			
+			//Middle cluster
+			intervalAvrg = (intervals.get(2) + intervals.get(3))/2;
+			p1 = new Point (0 , intervalAvrg);
+			p2 = new Point (mat.cols()-1 , intervalAvrg);
+			color = new Scalar(0, 255, 0);//Green
+			Imgproc.line(res, p1, p2, color, 3);
+			
+			break;
+		
+		case 4: 
+			
+			//Middle cluster 1
+			intervalAvrg = (intervals.get(2) + intervals.get(3))/2;
+			p1 = new Point (0 , intervalAvrg);
+			p2 = new Point (mat.cols()-1 , intervalAvrg);
+			color = new Scalar(0, 255, 0);//Green
+			Imgproc.line(res, p1, p2, color, 3);
+			
+			//Middle cluster2
+			intervalAvrg = (intervals.get(4) + intervals.get(5))/2;
+			p1 = new Point (0 , intervalAvrg);
+			p2 = new Point (mat.cols()-1 , intervalAvrg);
+			color = new Scalar(0, 255, 0);//Green
+			Imgproc.line(res, p1, p2, color, 3);
+			
+			
+			break;
+		}
+		
+		return res;
+	}
+	
 	/**
 	 * Applies hough probabilistic transform on given mat (Given mat must be grayscale)
 	 * @param edges : the given mat
@@ -275,7 +335,7 @@ public class Processing {
 				bool = true;
 			maxLoop++;
 		}
-		while (maxLoop <70 && !bool);
+		while (maxLoop <50 && !bool);
 		
 		System.out.println("Vertical hough threshold: " + houghThresh);
 	    HighGui.imshow("Hough Vertical", edgesColorV);

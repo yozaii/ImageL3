@@ -34,7 +34,7 @@ public class Tests {
                 1, 1, 1 );
 		
 		
-		String path = "D:\\UE_Image\\Base_Image\\Base\\50.jpg";//Remplir ici ou se trouve le fichier
+		String path = "D:\\UE_Image\\Base_Image\\Base\\0.jpg";//Remplir ici ou se trouve le fichier
 
 		/*-----------------------------------------------------------*/
 		/*-------------------Resizing the image----------------------*/
@@ -53,7 +53,7 @@ public class Tests {
 	    for (int i = 0; i < cl.rows(); i++) {
 	    	Processing.blackBeforeAndAfter(i, minMax[0],minMax[1], cl);
 	    }
-	    HighGui.imshow("result", cl);
+	    //HighGui.imshow("vertical ROI", cl);
 	    
 	    
 	    /*-----------------------------------------------------------*/
@@ -97,7 +97,7 @@ public class Tests {
 		/*-----------------------Mean threshold----------------------*/
 		/*-----------------------------------------------------------*/
 		sobelY = Filters.meanThreshold(sobelY, 20);
-		HighGui.imshow("sobelY after thresh", sobelY);
+		//HighGui.imshow("sobelY after thresh", sobelY);
 		kernel.put(kRow ,kCol,
 	                1, 1, 1,
 	                1, 1, 1,
@@ -131,27 +131,30 @@ public class Tests {
 		/*-----------------------------------------------------------*/
 		houghThresh = (sobelYR.cols() - minMax[1] - minMax[0])/3;
 		Mat houghHR = Processing.hough(sobelYR, houghThresh, "Horizontal");
-		HighGui.imshow("Hough reverse horizontal", houghHR);
+		//HighGui.imshow("Hough reverse horizontal", houghHR);
+		
 		
 		/*-----------------------------------------------------------*/
-		/*------------------Red line operations----------------------*/
+		/*------------------non red intervals/distance---------------*/
 		/*-----------------------------------------------------------*/
-		ArrayList<Integer> nonRedIntervals = RedOp.nonRedIntervals(houghH);
-		System.out.println("The indices of the nonRed intervals" + nonRedIntervals.toString());
+		Mat houghH2 = Processing.removeNonRedIntervals(houghH, 10);
 		
-		ArrayList<Integer> nonRedSize = RedOp.nonRedIntervalsSize(houghH);
-		System.out.println("The distance of the nonRed intervals:" + nonRedSize.toString());
+		//HighGui.imshow("HOUGH TWOOO", houghH2);
 		
-		/*-----------------------------------------------------------*/
-		/*------------------Red line operations 2--------------------*/
-		/*-----------------------------------------------------------*/
-		ArrayList<Integer> newNonRedIntervals = RedOp.listsThreshold(nonRedSize, nonRedIntervals, 21);
-		System.out.println("Intervals after: " + newNonRedIntervals.toString());
-		Mat houghH2 = houghH.clone();
-		for (int i = 0 ; i< newNonRedIntervals.size()-1; i+=2) {
-			Processing.colorRowsRed(newNonRedIntervals.get(i), newNonRedIntervals.get(i+1), houghH2);
-		}
-		HighGui.imshow("HOUGH TWOOO", houghH2);
+		for (int i = 0; i < 30; i++)
+			Processing.blackBetween(i, 0, houghH2.cols(), houghH2);
+		
+		for (int i = houghH2.rows()-30; i < houghH2.rows(); i++)
+			Processing.blackBetween(i, 0, houghH2.cols(), houghH2);
+		
+		ArrayList<Integer> redIntervals = RedOp.redIntervals(houghH2);
+		ArrayList<Integer> redDistance = RedOp.nonRedIntervalsSize(houghH2);
+		
+		System.out.println("red intervals after: " + redIntervals.toString());
+		Mat mat2 = Imgcodecs.imread(path, Imgcodecs.CV_LOAD_IMAGE_COLOR);
+		mat2 = PreProcessing.resizeMat(mat2, 480, 640);
+		Mat result = Processing.drawClusters(mat2, redIntervals);
+		HighGui.imshow("result", result);
 		
 		HighGui.waitKey();
 		HighGui.destroyAllWindows();
