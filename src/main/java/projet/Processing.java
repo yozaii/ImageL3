@@ -215,7 +215,8 @@ public class Processing {
 	 */
 	public static int[] verticalROI(Mat mat) {
 		
-		Imgproc.medianBlur(mat, mat, 5);
+		
+		Imgproc.medianBlur(mat, mat, 5);//Blurring to remove noise
 		Mat edgesV = new Mat();//Will contain canny edges
 		Mat kernel = Mat.ones(5,5, CvType.CV_32F);//5x5 kernel filled with ones
 		
@@ -243,11 +244,11 @@ public class Processing {
 			edgesColorV = Processing.hough(edgesV, houghThresh, "Vertical");
 			minMax = findMinMaxRed(0, edgesColorV);
 			
-			int minCenter = 105;
-			int maxCenter = 375;
-			int minLeft = 40;
-			int maxRight = 440;
-			int average = (minMax[0] + minMax[1])/2;
+			int minCenter = 105;//the minimum value of the center of the hough interval
+			int maxCenter = 375;//the maximum value of the center of the hough interval
+			int minLeft = 40;//the minimum value of the first hough line
+			int maxRight = 440;//the maximum value of the last hough line
+			int average = (minMax[0] + minMax[1])/2;//
 			int houghIncrement = 10;
 			int minWidth = 30;
 			boolean tests = true;

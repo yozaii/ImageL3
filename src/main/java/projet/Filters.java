@@ -10,6 +10,12 @@ import org.opencv.imgproc.Imgproc;
 
 public class Filters {
 	
+	/**
+	 * Creates a custom 3x3 Mat
+	 * @param table : a table of size 9 that determine the mat values
+	 * @param type : type of mat
+	 * @return : the custom 3x3 Mat
+	 */
 	public static Mat custom3x3Mat(double [] table, int type) {
 			
 			
@@ -46,11 +52,10 @@ public class Filters {
 	
 	
 	/**
-	 * 
-	 * @param mat
-	 * @param thresh : higher thresh -> more erosion
-	 * @param shape cross by default. Square if square kernel is needed
-	 * @return
+	 * Applies a filter using a custom 3x3 matrix
+	 * @param mat : the source matrix
+	 * @param kernel3x3 : A 3x3 kernel that we will use to filter the mat
+	 * @return : the processed (filtered) matrix
 	 */
 	public static Mat customFilter(Mat mat, Mat kernel3x3)  {
 
@@ -128,6 +133,12 @@ public class Filters {
 		return res;
 	}
 	
+	/**
+	 * Basic threshholding operation
+	 * @param mat : The matrix to be processed
+	 * @param thresh : The threshold
+	 * @return : The processed matrix
+	 */
 	public static Mat thresholding(Mat mat, double thresh) {
 		Mat res = mat.clone();
 		int rows = res.rows();
@@ -146,14 +157,18 @@ public class Filters {
 					double[] data = {255};
 					res.put(i, j, data);
 				}
-
-
 			}
 		}
 		
 		return res;
 	}
 	
+	/**
+	 * Applies a threshold to a pixel according to the mean value in a 3x3 matrix
+	 * @param mat : The matrix to be processed
+	 * @param thresh : If x (value of the mean) > threshold, pixel becomes white, otherwise it becomes black
+	 * @return : The processed matrix
+	 */
 	public static Mat meanThreshold(Mat mat, double thresh) {
 		Mat res = mat.clone();
 		int rows = res.rows();

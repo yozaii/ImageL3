@@ -15,12 +15,12 @@ import projet.PreProcessing;
 public class Morphology {
 	
 	/**
-	 * 
-	 * @param mat
-	 * @param shape cross by default. Square if square kernel is needed
-	 * @return
+	 * Applies dilation morphology on a matrix
+	 * @param mat : The matrix to be dilated
+	 * @param shape : cross by default. "Square" if square kernel is needed
+	 * @return : Dilated matrix
 	 */
-	public static Mat customDilation(Mat mat)  {
+	public static Mat customDilation(Mat mat, String shape)  {
 		Mat res = mat.clone();
 		int rows = mat.rows();
 		int cols = mat.cols();
@@ -42,16 +42,25 @@ public class Morphology {
 				dataBot = mat.get(i, j+1);
 				dataRight = mat.get(i+1, j);
 				dataLeft = mat.get(i-1, j);
-				dataTopL = mat.get(i-1, j-1);
-				dataTopR = mat.get(i+1, j-1);
-				if (data[0] > 40) counter++;
-				if (dataTop[0] > 40) counter++;
-				if (dataRight[0] > 40) counter++;
-				if (dataLeft[0] > 40) counter++;
-				if (dataTopL[0] > 40) counter++;
-				if (dataTopR[0] > 40) counter++;
+				if (data[0]==0) counter++;
+				if (dataTop[0] == 0) counter++;
+				if (dataBot[0] == 0) counter++;
+				if (dataRight[0] == 0) counter++;
+				if (dataLeft[0] == 0) counter++;
+				
+				if (shape == "Square") {
+					dataTopL = mat.get(i-1, j-1);
+					dataTopR = mat.get(i+1, j-1);
+					dataBotL = mat.get(i-1, j+1);
+					dataBotR = mat.get(i+1, j+1);
+					if (dataTopL[0]==0) counter++;
+					if (dataTopR[0] == 0) counter++;
+					if (dataBotL[0] == 0) counter++;
+					if (dataBotR[0] == 0) counter++;
+					
+				}
 				if (counter>0) {
-					data[0] = 255;
+					data[0] = 0;
 					res.put(i, j, data[0]);
 				}
 			}
@@ -60,13 +69,13 @@ public class Morphology {
 	}
 	
 	/**
-	 * 
-	 * @param mat
+	 * Applies erosion morphology on a matrix
+	 * @param mat : The matrix to erode
 	 * @param thresh : higher thresh -> more erosion
-	 * @param shape cross by default. Square if square kernel is needed
-	 * @return
+	 * @param shape : cross by default. "Square" if square kernel is needed
+	 * @return : Eroded matrix
 	 */
-	public static Mat customErosion(Mat mat, int thresh)  {
+	public static Mat customErosion(Mat mat, int thresh, String shape)  {
 
 		Mat res = mat.clone();
 		int rows = mat.rows();
@@ -89,16 +98,22 @@ public class Morphology {
 				dataBot = mat.get(i, j+1);
 				dataRight = mat.get(i+1, j);
 				dataLeft = mat.get(i-1, j);
-				dataTopL = mat.get(i-1, j-1);
-				dataTopR = mat.get(i+1, j-1);
-				dataBotL = mat.get(i-1, j+1);
-				dataBotR = mat.get(i+1, j+1);
-				if (data[0] > 40) counter++;
-				if (dataTop[0] > 40) counter++;
-				if (dataRight[0] > 40) counter++;
-				if (dataLeft[0] > 40) counter++;
-				if (dataTopL[0] > 40) counter++;
-				if (dataTopR[0] > 40) counter++;
+				if (data[0]==0) counter++;
+				if (dataTop[0] == 0) counter++;
+				if (dataBot[0] == 0) counter++;
+				if (dataRight[0] == 0) counter++;
+				if (dataLeft[0] == 0) counter++;
+				
+				if (shape == "Square") {
+					dataTopL = mat.get(i-1, j-1);
+					dataTopR = mat.get(i+1, j-1);
+					dataBotL = mat.get(i-1, j+1);
+					dataBotR = mat.get(i+1, j+1);
+					if (dataTopL[0]==0) counter++;
+					if (dataTopR[0] == 0) counter++;
+					if (dataBotL[0] == 0) counter++;
+					if (dataBotR[0] == 0) counter++;
+				}
 				if (counter>0 && counter <thresh) {
 					data[0] = 255;
 					res.put(i, j, data[0]);
@@ -108,15 +123,29 @@ public class Morphology {
 		return res;
 	}
 	
-	public static Mat customOpening(Mat mat, int thresh) {
-		Mat er = customErosion(mat, thresh);
-		Mat opening = customDilation(mat);
+	/**
+	 * Applies opening morphology on a matrix
+	 * @param mat : The matrix to open
+	 * @param thresh : higher thresh -> more erosion
+	 * @param shape : cross by default. "Square" if square kernel is needed
+	 * @return : Opened matrix
+	 */
+	public static Mat customOpening(Mat mat, int thresh, String shape) {
+		Mat er = customErosion(mat, thresh, shape);
+		Mat opening = customDilation(mat, shape);
 		return opening;
 	}
 	
-	public static Mat customClosing(Mat mat, int thresh) {
-		Mat dil = customDilation(mat);
-		Mat closing = customErosion(dil, thresh);
+	/**
+	 * Applies closing morphology on a matrix
+	 * @param mat : The matrix to close
+	 * @param thresh : higher thresh -> more erosion
+	 * @param shape : cross by default. "Square" if square kernel is needed
+	 * @return : Closed matrix
+	 */
+	public static Mat customClosing(Mat mat, int thresh, String shape) {
+		Mat dil = customDilation(mat,shape);
+		Mat closing = customErosion(dil, thresh,shape);
 		return closing;
 	}
 
