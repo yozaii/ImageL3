@@ -33,7 +33,7 @@ public class Tests {
                 1, 1, 1 );
 		
 		
-		String path = "D:\\UE_Image\\Base_Image\\Base\\31.jpeg";//Remplir ici ou se trouve le fichier
+		String path = "D:\\UE_Image\\Base_Image\\Base\\50.jpg";//Remplir ici ou se trouve le fichier
 
 		/*-----------------------------------------------------------*/
 		/*-------------------Resizing the image----------------------*/

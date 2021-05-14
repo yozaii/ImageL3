@@ -7,38 +7,15 @@ import org.opencv.core.Scalar;
 import org.opencv.highgui.HighGui;
 import org.opencv.imgproc.Imgproc;
 
+
+/**
+ * This class is for processing methods (filters unincluded) 
+ * @author Youssef AL OZAIBI
+ *
+ */
 public class Processing {
 	
-	/**
-	 * Finds first and last occurence of red color in a matrix row
-	 * @param row : The row to test
-	 * @param mat : The mat to test
-	 * @return : Returns a tuple with int[0] = min and int[1] = max
-	 */
-	public static int[] findMinMaxRed(int row, Mat mat) {
-		
-		
-		int min = 25000; //25000 is an arbitrary value (big number)
-		int current = 0;
-		int max = 0;
-		double data[];
-		
-		
-		for (int i = 0 ; i< mat.cols(); i++) {
-			data = mat.get(row, i);
-			if (data[0] == 0 && data[1] == 0 && data[2] == 255) {
-				current = i;
-				if (i < min) min = i;//min is first occurence of red in the line
-			}
-		}
-		
-		max = current;//Max is the last occurence of red in the line
-		
-		int[] ret = new int[2];//The tuple containing min and max
-		ret[0] = min;
-		ret[1] = max;
-		return ret;
-	}
+	
 	
 	/**
 	 * Colors black before and after given indices in a given row
@@ -62,24 +39,6 @@ public class Processing {
 		}
 	}
 	
-	/**
-	 * Takes the pixels of the red colors in the first mat, and removes them from the second mat.
-	 * @param mat
-	 * @param rMat
-	 */
-	public static void removeDetails(Mat mat, Mat rMat) {
-		
-		Mat res = rMat.clone();
-		double[] data;
-		double[] black = {0,0,0};
-		for (int i = 0; i < mat.rows(); i++)
-			for (int j = 0 ; j < mat.cols(); j++) {
-				data = mat.get(i, j);
-				if (data[0] == 0 && data[1] == 0 && data[2] == 255) {
-					res.put(i, j, black);
-				}
-			}
-	}
 	
 	/**
 	 * Colors black between min and max indices in a given row
@@ -242,7 +201,7 @@ public class Processing {
 		do {
 			
 			edgesColorV = Processing.hough(edgesV, houghThresh, "Vertical");
-			minMax = findMinMaxRed(0, edgesColorV);
+			minMax = RedOp.findMinMaxRed(0, edgesColorV);
 			
 			int minCenter = 105;//the minimum value of the center of the hough interval
 			int maxCenter = 375;//the maximum value of the center of the hough interval

@@ -8,6 +8,11 @@ import org.opencv.core.Scalar;
 import org.opencv.highgui.HighGui;
 import org.opencv.imgproc.Imgproc;
 
+/**
+ * This class is for filtering methods
+ * @author Youssef AL OZAIBI
+ *
+ */
 public class Filters {
 	
 	/**

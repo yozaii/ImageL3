@@ -11,6 +11,11 @@ import org.jfree.data.statistics.HistogramDataset;
 import org.opencv.core.Mat;
 import org.opencv.highgui.HighGui;
 
+/**
+ * This class is for histogram related methods
+ * @author Youssef AL OZAIBI
+ *
+ */
 public class Histogram  {
 	
 	//Fills table with zeros
