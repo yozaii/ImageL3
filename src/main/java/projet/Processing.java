@@ -94,7 +94,7 @@ public class Processing {
 		return res;
 	}
 	
-	public static Mat drawClusters(Mat mat, ArrayList<Integer> intervals) {
+	public static Mat detectLevels(Mat mat, ArrayList<Integer> intervals, int min, int max) {
 		Mat res = mat.clone();
 		
 		int size = intervals.size();
@@ -103,52 +103,80 @@ public class Processing {
 		/*--The upper and lower clusters are colored in blue-------*/
 		/*---------------------------------------------------------*/
 		
-		//Upper cluster
+		//Top left of rectangle
 		int intervalAvrg = (intervals.get(0) + intervals.get(1))/2;
-		Point p1 = new Point (0 , intervalAvrg);
-		Point p2 = new Point (mat.cols()-1 , intervalAvrg);
-		Scalar color = new Scalar(255, 0, 0);//Blue
-		Imgproc.line(res, p1, p2, color, 3);
+		Point p1 = new Point (min , intervalAvrg);
 		
-		//Lower cluster
+		//Bottom right of rectangle
 		intervalAvrg = (intervals.get(size-2 ) + intervals.get(size-1))/2;
-		p1 = new Point (0 , intervalAvrg);
-		p2 = new Point (mat.cols()-1 , intervalAvrg);
-		color = new Scalar(255, 0, 0);//Blue
-		Imgproc.line(res, p1, p2, color, 3);
+		Point p2 = new Point (max , intervalAvrg);
+			
+		Scalar color = new Scalar(255, 0, 0);//Blue
+		
+		Imgproc.rectangle(res, p1, p2, color, 3);
 		
 		
 		int numClusters = size/2;
 		switch (numClusters) {
+		
+		case 0:
+		
+			break;
+			
+		case 1: 
+
+			break;
+			
+		case 2:
+			
+			break;
+			
 		case 3: 
 			
 			//Middle cluster
 			intervalAvrg = (intervals.get(2) + intervals.get(3))/2;
-			p1 = new Point (0 , intervalAvrg);
-			p2 = new Point (mat.cols()-1 , intervalAvrg);
+			p1 = new Point (min , intervalAvrg);
+			p2 = new Point (max , intervalAvrg);
 			color = new Scalar(0, 255, 0);//Green
 			Imgproc.line(res, p1, p2, color, 3);
 			
 			break;
-		
-		case 4: 
 			
+		case 100:
 			//Middle cluster 1
-			intervalAvrg = (intervals.get(2) + intervals.get(3))/2;
-			p1 = new Point (0 , intervalAvrg);
-			p2 = new Point (mat.cols()-1 , intervalAvrg);
+			int intervalAvrg1 = (intervals.get(2) + intervals.get(3))/2;
+			p1 = new Point (min , intervalAvrg1);
+			p2 = new Point (max , intervalAvrg1);
 			color = new Scalar(0, 255, 0);//Green
 			Imgproc.line(res, p1, p2, color, 3);
 			
-			//Middle cluster2
-			intervalAvrg = (intervals.get(4) + intervals.get(5))/2;
-			p1 = new Point (0 , intervalAvrg);
-			p2 = new Point (mat.cols()-1 , intervalAvrg);
+			//Middle cluster 2
+			int intervalAvrg2 = (intervals.get(size-4) + intervals.get(size-3))/2;
+			p1 = new Point (min , intervalAvrg2);
+			p2 = new Point (max , intervalAvrg2);
 			color = new Scalar(0, 255, 0);//Green
 			Imgproc.line(res, p1, p2, color, 3);
 			
-			
+			//Middle cluster real middle innit
+			intervalAvrg = (intervalAvrg1 + intervalAvrg2)/2;
+			p1 = new Point (min , intervalAvrg);
+			p2 = new Point (max , intervalAvrg);
+			color = new Scalar(0, 0, 0);//Green
+			Imgproc.line(res, p1, p2, color, 3);
 			break;
+			
+		default:
+			
+			//Middle clusters
+			for (int i=2; i< size -2; i+=2 ) {
+				intervalAvrg = (intervals.get(i) + intervals.get(i+1))/2;
+				p1 = new Point (min , intervalAvrg);
+				p2 = new Point (max , intervalAvrg);
+				color = new Scalar(0, 255, 0);//Green
+				Imgproc.line(res, p1, p2, color, 3);
+			}
+			break;
+			
 		}
 		
 		return res;
@@ -338,7 +366,7 @@ public class Processing {
 		while (maxLoop <50 && !bool);
 		
 		System.out.println("Vertical hough threshold: " + houghThresh);
-	    HighGui.imshow("Hough Vertical", edgesColorV);
+	    //HighGui.imshow("Hough Vertical", edgesColorV);
 	    
 		return minMax;
 	}

@@ -34,7 +34,7 @@ public class Tests {
                 1, 1, 1 );
 		
 		
-		String path = "D:\\UE_Image\\Base_Image\\Base\\0.jpg";//Remplir ici ou se trouve le fichier
+		String path = "D:\\UE_Image\\Base_Image\\Base\\1.jpg";//Remplir ici ou se trouve le fichier
 
 		/*-----------------------------------------------------------*/
 		/*-------------------Resizing the image----------------------*/
@@ -42,7 +42,7 @@ public class Tests {
 		Mat mat;
 		mat = Imgcodecs.imread(path,0);//Reading image and loading it into a matrix
 		mat = PreProcessing.resizeMat(mat, 480, 640);
-		HighGui.imshow("source", mat);
+		//HighGui.imshow("source", mat);
 	
 		
 		/*-----------------------------------------------------------*/
@@ -70,7 +70,7 @@ public class Tests {
 		/*----------Applying vertical change sobel filter------------*/
 		/*-----------------------------------------------------------*/
 		Mat sobelY = Filters.sobelY(cl);
-		HighGui.imshow("sobelY before", sobelY);
+		//HighGui.imshow("sobelY before", sobelY);
 		Size s = new Size(5,5);
 		for (int i =0 ; i < 5 ; i++)
 			Imgproc.blur(sobelY, sobelY, s);
@@ -123,7 +123,7 @@ public class Tests {
 		int houghThresh = (minMax[1] - minMax[0])/3;
 		System.out.println("Region of interest min: " + minMax[0] + " max: " + minMax[1] +  " thresh: " + houghThresh);
 		Mat houghH = Processing.hough(sobelY, houghThresh, "Horizontal");
-		HighGui.imshow("Hough horizontal", houghH);
+		//HighGui.imshow("Hough horizontal", houghH);
 		
 		
 		/*-----------------------------------------------------------*/
@@ -153,7 +153,7 @@ public class Tests {
 		System.out.println("red intervals after: " + redIntervals.toString());
 		Mat mat2 = Imgcodecs.imread(path, Imgcodecs.CV_LOAD_IMAGE_COLOR);
 		mat2 = PreProcessing.resizeMat(mat2, 480, 640);
-		Mat result = Processing.drawClusters(mat2, redIntervals);
+		Mat result = Processing.detectLevels(mat2, redIntervals, minMax[0], minMax[1]);
 		HighGui.imshow("result", result);
 		
 		HighGui.waitKey();
