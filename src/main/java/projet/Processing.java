@@ -72,6 +72,12 @@ public class Processing {
 		}
 	}
 	
+	/**
+	 * Removes non red intervals between red lines found in an image
+	 * @param mat : the matrix of the image
+	 * @param thresh : the threshold for distance between the intervals
+	 * @return : The new matrix with removed non red intervals
+	 */
 	public static Mat removeNonRedIntervals(Mat mat, int thresh) {
 		/*-----------------------------------------------------------*/
 		/*----------Finding non red intervals/distance---------------*/
@@ -94,6 +100,14 @@ public class Processing {
 		return res;
 	}
 	
+	/**
+	 * Draws a blue rectangle that corresponds to the cup and green lines that correspond to estimated water levels
+	 * @param mat : The matrix to draw the rectangle over
+	 * @param intervals : the red hough line intervals of an image
+	 * @param min : the min of the vertical ROI
+	 * @param max : the max of the vertical ROI
+	 * @return : Image (matrix) with a blue rectangle for the cup, and green lines for the estimated water levels
+	 */
 	public static Mat detectLevels(Mat mat, ArrayList<Integer> intervals, int min, int max) {
 		Mat res = mat.clone();
 		

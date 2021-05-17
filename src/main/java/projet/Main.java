@@ -24,16 +24,15 @@ public class Main {
 		//nu.pattern.OpenCV.loadShared();
 		nu.pattern.OpenCV.loadLocally();
 		
-		
-		String path = "D:\\UE_Image\\Base_Image\\Base\\75.jpg";//Remplir ici ou se trouve le fichier
+		String path = "D:\\UE_Image\\Base_Image\\Base\\9.jpg";//Fill here the image path
 
 		Mat source = Imgcodecs.imread(path, 0);
 		source = Imgcodecs.imread(path,0);//Reading image and loading it into a matrix
 		source  = PreProcessing.resizeMat(source, 480, 640);
-		HighGui.imshow("source", source);
+		HighGui.imshow("Source image", source);
 		
 		Mat det = Detection.detectCupWater(path);
-		HighGui.imshow("detection result", det);
+		HighGui.imshow("Detection result", det);
 		HighGui.waitKey();
 		HighGui.destroyAllWindows();
 		System.exit(0);
